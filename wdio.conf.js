@@ -6,6 +6,7 @@ if (process.env.SERVER ==='prod')
 else {
     baseUrl = "http://www.webdriveruniversity.com/"
 }
+var timeout = process.env.DEBUG ? 999999 : 10000;
 
 
 exports.config = {
@@ -133,12 +134,27 @@ exports.config = {
     // Test reporter for stdout.
     // The only one supported by default is 'dot'
     // see also: http://webdriver.io/guide/reporters/dot.html
-    // reporters: ['dot'],
+   reporters: ['dot', 'junit','json','allure'],
+   reporterOptions: {
+    junit:{
+        outputDir: './reports/junit-results/'
+    },
+      json:{
+        outputDir: './reports/json-results/'
+    },
+       allure: {
+        outputDir: './reports/allure-results/',
+        disabledWebdriverScreenshotsReporting: false,
+        useCucumberStepReporter:false
+    },
+   },
     //
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
     mochaOpts: {
-        ui: 'bdd'
+        ui: 'bdd',
+        timeout: timeout
+
     },
     //
     // =====
@@ -170,8 +186,10 @@ exports.config = {
      * @param {Array.<Object>} capabilities list of capabilities details
      * @param {Array.<String>} specs List of spec file paths that are to be run
      */
-    // before: function (capabilities, specs) {
-    // },
+     before: function (capabilities, specs) {
+        expect = require('chai').expect;
+        should = require('chai').should();
+    },
     /**
      * Runs before a WebdriverIO command gets executed.
      * @param {String} commandName hook command name
